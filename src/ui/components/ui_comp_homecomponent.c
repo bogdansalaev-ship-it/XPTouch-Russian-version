@@ -1377,7 +1377,7 @@ lv_obj_t *ui_homeComponent_create(lv_obj_t *comp_parent)
     lv_obj_set_height(cui_mainScreenSubtaskLabel, LV_SIZE_CONTENT);
     lv_obj_set_style_min_height(cui_mainScreenSubtaskLabel, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(cui_mainScreenSubtaskLabel, " ");
-    lv_obj_set_style_text_font(cui_mainScreenSubtaskLabel, &lv_font_notosans_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(cui_mainScreenSubtaskLabel, lv_font_small, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(cui_mainScreenSubtaskLabel, lv_color_hex(0xaaaaaa), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_long_mode(cui_mainScreenSubtaskLabel, LV_LABEL_LONG_CLIP);
 #endif

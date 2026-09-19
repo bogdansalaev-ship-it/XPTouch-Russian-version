@@ -163,6 +163,12 @@ def post_build_action(source, target, env):
     with open("version.json", "r") as version_file:
         version_data = json.load(version_file)
         version_value = version_data.get("version", "UNKNOWN")
+    for directory in (
+        "../xptouch-bin/2.8/ota",
+        "../xptouch-bin/2.8/webusb",
+        "../xptouch-bin/2.8/fw",
+    ):
+        os.makedirs(directory, exist_ok=True)
     print(version_value)
     print(f"xptouch delete_bin_files ../xptouch-bin/2.8/ota")
     delete_bin_files("../xptouch-bin/2.8/ota")
