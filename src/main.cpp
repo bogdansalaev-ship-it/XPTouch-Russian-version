@@ -1,6 +1,7 @@
 #include <driver/i2s.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <ArduinoOTA.h>
 #include "xtouch/globals.h"
 #include "xtouch/debug.h"
 #include "xtouch/paths.h"
@@ -169,7 +170,28 @@ void setup()
   while (!xtouch_wifi_setup())
     ;
 
-  // Network OTA check removed to avoid automatic restarts.
+  ArduinoOTA.setHostname("xtouch");
+  ArduinoOTA.onStart([]() {
+    lv_label_set_text(introScreenCaption, " OTA: начало обновления");
+    lv_timer_handler();
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    char message[32];
+    snprintf(message, sizeof(message), " OTA: %u%%", (progress * 100U) / total);
+    lv_label_set_text(introScreenCaption, message);
+    lv_timer_handler();
+  });
+  ArduinoOTA.onEnd([]() {
+    lv_label_set_text(introScreenCaption, " OTA: готово");
+    lv_timer_handler();
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    char message[32];
+    snprintf(message, sizeof(message), " OTA: ошибка %u", (unsigned)error);
+    lv_label_set_text(introScreenCaption, message);
+    lv_timer_handler();
+  });
+  ArduinoOTA.begin();
 
   xtouch_screen_setupScreenTimer();
   xtouch_screen_setupLEDOffTimer();
@@ -244,6 +266,7 @@ static uint32_t s_last_heap_log_ms = 0;
 
 void loop()
 {
+  ArduinoOTA.handle();
   lv_timer_handler();
   lv_task_handler();
   if (xTouchConfig.xTouchLanOnlyMode ||cloud.loggedIn)

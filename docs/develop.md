@@ -1,110 +1,57 @@
-# 開発環境のセットアップ
+# Среда разработки
 
-ファームウェアのビルドを行う場合、以下の開発環境のセットアップが必要です。
+## Инструменты
 
-## 必要なツール
+- [Visual Studio Code](https://code.visualstudio.com/);
+- расширение **PlatformIO IDE**;
+- Python 3.7 или новее;
+- Node.js LTS 14 или новее.
 
-- **Python**: PlatformIOのビルドシステムで使用されます。Python 3.7以上が必要です。
-  - [Python公式サイト](https://www.python.org/downloads/)からダウンロードできます。
-  - インストール時に「Add Python to PATH」にチェックを入れることを推奨します。
-- **Node.js**: ビルドスクリプトでエラーデータのダウンロードに使用されます。Node.js 14以上が必要です。
-  - [Node.js公式サイト](https://nodejs.org/)からLTS版をダウンロードできます。
-  - インストール時に自動的にPATHに追加されます。
-- **PlatformIO**: ESP32のファームウェアをビルドするために必要です。
-  - VS Codeの拡張機能としてインストールするか、コマンドラインからインストールできます。
-  - [PlatformIO公式サイト](https://platformio.org/)を参照してください。
-- **LovyanGFX（tac-lab version）**: グラフィックスライブラリとして使用されます。
-  - このプロジェクトには`lib/LovyanGFX`ディレクトリに含まれています。
-  - [tac-lab版LovyanGFX](https://github.com/tac5551/LovyanGFX)は、xptouchで使用する各種ボードに対応したカスタマイズ版です。
-  - PlatformIOが自動的にこのライブラリを認識して使用します。
+PlatformIO устанавливается как расширение VS Code. Библиотека LovyanGFX уже находится в `lib/LovyanGFX`, остальные зависимости PlatformIO скачает из `platformio.ini`.
 
-## esptool（ESP32用ツール）
+## Пользовательская плата ESP32-S3
 
-ビルド後のファームウェアマージ処理で使用されます。
+Для экрана JC8048W550 скопируйте описание платы:
 
-- PlatformIOをインストールすると自動的に`~/.platformio/packages/tool-esptoolpy`にインストールされます。
-- ビルドスクリプトで`esptool.py`を直接実行するため、PATH設定は不要です（スクリプト内で自動的にパスを解決します）。
+```bash
+mkdir -p ~/.platformio/boards
+cp docs/boards/esp32-s3-devkitc1-n16r8.json ~/.platformio/boards/
+```
 
-### 以前のバージョンでのPATH設定（参考）
+После этого перезапустите VS Code и откройте проект из корня репозитория.
 
-以前のバージョンでは、PATHに追加する必要がありました。現在のバージョンでは不要ですが、参考として記載します。
+## Сборка и прошивка
 
-- **Windows環境でのPATH設定方法**:
-  - システムの環境変数に以下を追加してください：
-    ```
-    %USERPROFILE%\.platformio\packages\tool-esptoolpy
-    ```
-  - または、PowerShellで一時的に設定する場合：
-    ```powershell
-    $env:PATH += ";$env:USERPROFILE\.platformio\packages\tool-esptoolpy"
-    ```
-- **Linux/macOS環境でのPATH設定方法**:
-  - `~/.bashrc`または`~/.zshrc`に以下を追加：
-    ```bash
-    export PATH="$HOME/.platformio/packages/tool-esptoolpy:$PATH"
-    ```
+2.8-дюймовый экран:
 
-## カスタムボード定義ファイル
+```bash
+python3 -m platformio run -e esp32dev
+python3 -m platformio run -e esp32dev -t upload
+```
 
-ESP32-S3-DevKitC-1-N16R8ボードを使用する場合、カスタムボード定義ファイルをコピーする必要があります。
+5-дюймовый экран:
 
-- プロジェクトの`docs/boards/esp32-s3-devkitc1-n16r8.json`をPlatformIOのboardsディレクトリにコピーしてください。
-- **Windows環境でのコピー方法**:
-  ```powershell
-  Copy-Item "docs\boards\esp32-s3-devkitc1-n16r8.json" "$env:USERPROFILE\.platformio\boards\esp32-s3-devkitc1-n16r8.json"
-  ```
-- **Linux/macOS環境でのコピー方法**:
-  ```bash
-  cp docs/boards/esp32-s3-devkitc1-n16r8.json ~/.platformio/boards/esp32-s3-devkitc1-n16r8.json
-  ```
-- コピー後、PlatformIOを再起動するか、新しいターミナルを開いてビルドを実行してください。
+```bash
+python3 -m platformio run -e esp32-s3dev
+python3 -m platformio run -e esp32-s3dev -t upload
+```
 
-## 注意事項
+Для OTA задайте IP устройства и используйте кнопку Upload в PlatformIO либо задачи VS Code `XPTouch: OTA 2.8` и `XPTouch: OTA 5.0`:
 
-- ファームウェアのビルドを行わない場合（事前にビルドされたファームウェアを使用する場合）は、PythonとNode.jsは不要です。
+```bash
+export XTOUCH_OTA_IP=192.168.1.50
+python3 -m platformio run -e esp32dev-ota -t upload
+python3 -m platformio run -e esp32-s3dev-ota -t upload
+```
 
-## Cloud(HTTPS) の同時実行について（重要）
+Устройство и компьютер должны быть в одной Wi-Fi-сети. ArduinoOTA запускается после успешного подключения XPTouch к Wi-Fi. Во время прошивки не отключайте питание.
 
-`src/xtouch/cloud.hpp` の `BambuCloud` は、ヒープ節約のため **`WiFiClientSecure` を 1つ共有**して各 API 呼び出しで使い回しています。
-この構造で **複数の HTTPS リクエストが同時に走る**と、`WiFiClientSecure` / `HTTPClient` の内部状態が競合して **Guru Meditation (LoadProhibited) などの Panic**になることがあります。
+## Конфигурация
 
-そのため `BambuCloud` では FreeRTOS mutex による **HTTP 直列化**（`HttpLockGuard`）を入れています。
+Для Cloud Mode устройство использует `provisioning.json`, для LAN Only Mode - `xtouch.json` и `config.json` на microSD. Секреты Wi-Fi, токены и access code нельзя добавлять в Git.
 
-- **ルール**: `BambuCloud` 内で `sslClient()` / `HTTPClient` / `client.connect()` を使って通信する関数は、必ず先頭で `HttpLockGuard _g(this);` を作ってロックしてください。
-- **目的**: Cloud 側の HTTPS を「常に 1本だけ」にしてクラッシュを防ぐ（特に History の詳細取得、サムネ URL 解決、Reprint POST などが重なるケース）。
+Скрипты в `scripts/` добавляют версию прошивки и выполняют post-build обработку. Перед отправкой изменений проверьте оба аппаратных профиля.
 
-### 現在ガード対象になっている代表関数
+## HTTPS и Cloud API
 
-以下は `HttpLockGuard` が入っている（= 直列化される）関数です（追加・変更時はここも見直してください）。
-
-- `getDeviceList()`
-- `getSlicerSetting()`
-- `isCurrentTaskForDevice()`
-- `getTaskThumbnailUrl()`
-- `getMyTasks()`
-- `getMyTaskAmsDetailMapping()`（Reprint 押下時の詳細取得）
-- `submitReprintTask()`（Reprint POST）
-
-### History Reprint と Cloud API（filaments）
-
-- **一覧** `GET /v1/user-service/my/tasks` の各 hit には **`amsDetailMapping` が載ることが多い**（`has_ams_mapping` は `amsDetailMapping` または `filaments` 文字列の有無で立てる）。
-- **単体タスク** `GET /v1/user-service/my/task/<id>` は **`amsDetailMapping[]` を主データとして使用**する（Reprint 用の AMS 割当・色・重量を直接得られる）。
-- `filaments[].id` が `"2"` のような **内部ID**のとき、POST の `filamentId` は **`GFL03` 等の Bambu コードに寄せる**（`cloud.hpp` の `cloud_resolve_filament_id_for_reprint`）。既に `GFLxx` 形式ならそのまま使う。
-
-### フォールバック禁止ポリシー（重要）
-
-Cloud 連携データ（特に Reprint の `amsDetailMapping`）で必須値が欠けている場合、**推測値で補完して継続しない**こと。
-
-- **原則**: 不整合や欠損は「異常」として扱い、処理を失敗で終了する（ログを出して `false` を返す）。
-- **禁止**:
-  - 色や材質IDを固定値で埋める（例: `808080FF` / 汎用 `GFLxx` への自動置換）
-  - `sourceColor` を `targetColor` で上書きする
-  - 欠損 `filamentId` を別フィールドから推測して送る
-- **Reprint POST の必須整合**（`submitReprintTask()`）:
-  - `filamentId`: ユーザーが選択した AMS/Tray の `setting_id` を使用し、取れなければエラー
-  - `sourceColor`: 元マッピング値を保持（正規化のみ可）
-  - `targetColor`: 選択先トレイ色を使用（取れなければエラー）
-  - `weight` / `nozzleId` / `ams`: 元マッピング値を保持
-
-このポリシーは Reprint 以外の Cloud ペイロードにも同様に適用し、将来の変更でも「黙って補完」は追加しないこと。
-
+Клиент HTTPS в `src/xtouch/cloud.hpp` общий, поэтому запросы Cloud API выполняются последовательно. При добавлении нового HTTPS-вызова сохраняйте существующую синхронизацию и не подставляйте фиктивные значения при неполных данных.

@@ -438,7 +438,6 @@ void onXTouchPrintStatus(lv_event_t *e)
     }
     lv_slider_set_value(comp_homeComponent[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENPROGRESSBAR], bambuStatus.mc_print_percent, LV_ANIM_ON);
 
-#ifdef __XTOUCH_SCREEN_50__
     {
         lv_obj_t *subtaskLabel = comp_homeComponent[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENSUBTASKLABEL];
         if (subtaskLabel)
@@ -464,7 +463,6 @@ void onXTouchPrintStatus(lv_event_t *e)
             lv_label_set_text(subtaskLabel, subtaskBuf);
         }
     }
-#endif
 
     char remainingTimeText[48];
     _ui_seconds_to_timeleft(bambuStatus.mc_left_time, remainingTimeText);
@@ -1322,6 +1320,7 @@ lv_obj_t *ui_homeComponent_create(lv_obj_t *comp_parent)
     lv_obj_set_style_bg_opa(cui_mainScreenStopButton, 255, LV_PART_MAIN | LV_STATE_PRESSED);
 
     lv_obj_t *cui_mainScreenReprintButton = NULL;
+    lv_obj_t *cui_mainScreenSubtaskLabel = NULL;
 
 #if defined(__XTOUCH_SCREEN_50__)
     /* Failed/Finished 時にボタン位置に表示するラベル */
@@ -1357,7 +1356,7 @@ lv_obj_t *ui_homeComponent_create(lv_obj_t *comp_parent)
     lv_obj_add_flag(cui_mainScreenReprintButton, LV_OBJ_FLAG_HIDDEN);
 
     /* ボタン下に subtask_name の先頭を表示（最大約20文字想定で省略） */
-    lv_obj_t *cui_mainScreenSubtaskLabel = lv_label_create(cui_mainScreenControllerRight);
+    cui_mainScreenSubtaskLabel = lv_label_create(cui_mainScreenControllerRight);
     lv_obj_set_width(cui_mainScreenSubtaskLabel, 340);
     lv_obj_set_height(cui_mainScreenSubtaskLabel, LV_SIZE_CONTENT);
     lv_obj_set_style_min_height(cui_mainScreenSubtaskLabel, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1370,6 +1369,15 @@ lv_obj_t *ui_homeComponent_create(lv_obj_t *comp_parent)
         &lv_font_notosans_28,
 #endif
         LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(cui_mainScreenSubtaskLabel, lv_color_hex(0xaaaaaa), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_long_mode(cui_mainScreenSubtaskLabel, LV_LABEL_LONG_CLIP);
+#else
+    cui_mainScreenSubtaskLabel = lv_label_create(cui_mainScreenController);
+    lv_obj_set_width(cui_mainScreenSubtaskLabel, 110);
+    lv_obj_set_height(cui_mainScreenSubtaskLabel, LV_SIZE_CONTENT);
+    lv_obj_set_style_min_height(cui_mainScreenSubtaskLabel, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_text(cui_mainScreenSubtaskLabel, " ");
+    lv_obj_set_style_text_font(cui_mainScreenSubtaskLabel, &lv_font_notosans_14, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(cui_mainScreenSubtaskLabel, lv_color_hex(0xaaaaaa), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_long_mode(cui_mainScreenSubtaskLabel, LV_LABEL_LONG_CLIP);
 #endif
@@ -1896,12 +1904,11 @@ lv_obj_t *ui_homeComponent_create(lv_obj_t *comp_parent)
 #endif
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENPLAYPAUSEBUTTON] = cui_mainScreenPlayPauseButton;
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENSTOPBUTTON] = cui_mainScreenStopButton;
-#if defined(__XTOUCH_SCREEN_50__)
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENSUBTASKLABEL] = cui_mainScreenSubtaskLabel;
+#if defined(__XTOUCH_SCREEN_50__)
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENFINISHEDFAILEDLABEL] = cui_mainScreenFinishedFailedLabel;
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENREPRINTBUTTON] = cui_mainScreenReprintButton;
 #else
-    children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENSUBTASKLABEL] = NULL;
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENFINISHEDFAILEDLABEL] = NULL;
     children[UI_COMP_HOMECOMPONENT_MAINSCREENLEFT_MAINSCREENPLAYER_MAINSCREENCONTROLLER_MAINSCREENREPRINTBUTTON] = NULL;
 #endif

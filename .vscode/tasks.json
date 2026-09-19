@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "XPTouch: OTA 2.8",
+      "type": "shell",
+      "command": "python3 -m platformio run -e esp32dev-ota -t upload",
+      "problemMatcher": []
+    },
+    {
+      "label": "XPTouch: OTA 5.0",
+      "type": "shell",
+      "command": "python3 -m platformio run -e esp32-s3dev-ota -t upload",
+      "problemMatcher": []
+    }
+  ]
+}
