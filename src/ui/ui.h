@@ -1,0 +1,194 @@
+#ifndef _V3CONTROLCOMP_UI_H
+#define _V3CONTROLCOMP_UI_H
+#include <Arduino.h>
+#include "xtouch/errors.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include "xtouch/types.h"
+#include "xtouch/ams_edit_temp.h"
+#include "xtouch/trays.h"
+
+#if defined __has_include
+#if __has_include("lvgl.h")
+#include "lvgl.h"
+#elif __has_include("lvgl/lvgl.h")
+#include "lvgl/lvgl.h"
+#else
+#include "lvgl.h"
+#endif
+#else
+#include "lvgl.h"
+#endif
+
+#include "ui_msgs.h"
+#include "ui_helpers.h"
+#include "ui_loaders.h"
+#include "components/ui_comp.h"
+#include "components/ui_comp_hook.h"
+#include "ui_events.h"
+
+  extern bool xtouch_settings_initializing;
+  lv_timer_t *xtouch_screen_onScreenOffTimer;
+  lv_timer_t *xtouch_screen_onLEDOffTimer;
+  lv_timer_t *xtouch_ssdp_onButtonTimerTimer;
+  // SCREEN: ui_controlScreen
+  void ui_introScreen_screen_init(void);
+  void ui_homeScreen_screen_init(void);
+  void ui_temperatureScreen_screen_init(void);
+  void ui_controlScreen_screen_init(void);
+  void ui_settingsScreen_screen_init(void);
+  void ui_filamentScreen_screen_init(void);
+
+  void ui_printerPairScreen_screen_init(void);
+  void ui_amsViewScreen_screen_init(void);
+  void ui_optionalScreen_screen_init(void);
+  void ui_characterScreen_screen_init(void);
+
+  void ui_utilScreen_screen_init(void);
+  void ui_utilCalibrationScreen_screen_init(void);
+  void ui_utilNozzleChangeScreen_screen_init(void);
+  void ui_amsEditScreen_screen_init(void);
+  void ui_amsEditColorScreen_screen_init(void);
+#ifdef __XTOUCH_SCREEN_50__
+  void ui_printersScreen_screen_init(void);
+  void ui_historyScreen_screen_init(void);
+  void ui_historyReprintScreen_screen_init(void);
+#endif
+
+  lv_obj_t *introScreen;
+  lv_obj_t *introScreenIcon;
+  lv_obj_t *introScreenCaption;
+
+  lv_obj_t *ui_sidebarComponent;
+  lv_obj_t *ui_homeScreen;
+  lv_obj_t *ui_homeComponent;
+  lv_obj_t *ui_temperatureScreen;
+  lv_obj_t *ui_accessCodeScreen;
+  lv_obj_t *ui_accessCodeScreenKeyboard;
+  lv_obj_t *ui_accessCodeInput;
+  lv_obj_t *ui_printerPairScreen;
+  lv_obj_t *ui_temperatureComponent;
+  lv_obj_t *ui_controlScreen;
+  lv_obj_t *ui_controlComponent;
+  lv_obj_t *ui_settingsScreen;
+  lv_obj_t *ui_settingsComponent;
+  lv_obj_t *ui_settingsBackLightPanelSlider;
+  lv_obj_t *ui_settingsTFTOFFSlider;
+  lv_obj_t *ui_settingsTFTOFFValue;
+  lv_obj_t *ui_settingsLEDOFFSlider;
+  lv_obj_t *ui_settingsLEDOFFValue;
+  lv_obj_t *ui_settingsTFTInvertSwitch;
+  lv_obj_t *ui_settingsWOPSwitch;
+  lv_obj_t *ui_settingsWDPSWitch;
+  lv_obj_t *ui_settingsTFTFlipSwitch;
+  lv_obj_t *ui_settings_auxFanSwitch;
+  lv_obj_t *ui_settings_chamberFanSwitch;
+  lv_obj_t *ui_settings_chamberSensorSwitch;
+  lv_obj_t *ui_settings_otaSwitch;
+
+  
+  lv_obj_t *ui_optionalScreen;
+  lv_obj_t *ui_optionalComponent;
+  lv_obj_t *ui_optionalNeoPixelNumSlider;
+  lv_obj_t *ui_optionalNeoPixelNumValue;
+  lv_obj_t *ui_optionalNeoPixelBrightnessSlider;
+  lv_obj_t *ui_optionalNeoPixelBrightnessValue;
+  lv_obj_t *ui_optionalAlarmTimeoutSlider;
+  lv_obj_t *ui_optionalAlarmTimeoutValue;
+  lv_obj_t *ui_optional_chamberSensorSwitch;
+  lv_obj_t *ui_optional_stackChanSwitch;
+  lv_obj_t *ui_optional_preheatSwitch;
+  lv_obj_t *ui_optional_multiPrinterMonitorSwitch;
+  lv_obj_t *ui_optional_historySwitch;
+  lv_obj_t *ui_optional_hideThumbnailsSwitch;
+  lv_obj_t *ui_optional_Idle_ledSwitch;
+
+  lv_obj_t *ui_characterScreen;
+  lv_obj_t *ui_characterComponent;
+
+  lv_obj_t *ui_utilScreen;
+  lv_obj_t *ui_utilComponent;
+  lv_obj_t *ui_utilNozzleChangeScreen;
+  lv_obj_t *ui_utilNozzleChagneComponent;
+  lv_obj_t *ui_utilCalibrationScreen;
+  lv_obj_t *ui_utilCalibrationComponent;
+
+  lv_obj_t *ui_confirmComponent; // layertop
+  lv_obj_t *ui_lightingComponent; // layertop
+  lv_obj_t *ui_hmsComponent;     // layertop
+  lv_obj_t *ui_mainStatusComponent;
+  lv_obj_t *ui_filamentScreen;
+  lv_obj_t *ui_filamentComponent;
+  lv_obj_t *ui_printerPairScreenRoller;
+  lv_obj_t *ui_printerPairScreenSubmitButton;
+  lv_obj_t *ui_mainScreenChamberTempValue;
+  lv_obj_t *ui_amsViewScreen;
+  lv_obj_t *ui_amsViewComponent;
+  lv_obj_t *ui_amsEditScreen;
+  lv_obj_t *ui_amsEditComponent;
+  lv_obj_t *ui_amsEditColorScreen;
+  lv_obj_t *ui_amsEditColorComponent;
+#ifdef __XTOUCH_SCREEN_50__
+  lv_obj_t *ui_printersScreen;
+  lv_obj_t *ui_printersContentPanel;
+  extern lv_obj_t *ui_printersListContainer;
+  lv_obj_t *ui_historyScreen;
+  lv_obj_t *ui_historyContentPanel;
+  /* ui_historyListContainer は ui_comp_historycomponent.c で定義 */
+  extern lv_obj_t *ui_historyListContainer;
+  lv_obj_t *ui_historyReprintScreen;
+  /** Home 画面のサムネイル img（slot 0）。グローバル購読で IMAGE 受信時に再描画するため。 */
+  extern lv_obj_t *ui_homeThumbImg;
+#endif
+
+  void ui_event____initial_actions0(lv_event_t *e);
+  lv_obj_t *ui____initial_actions0;
+
+  LV_FONT_DECLARE(ui_font_xlcd);
+#ifdef __XTOUCH_SCREEN_50__
+  LV_FONT_DECLARE(ui_font_xlcd48);
+#endif
+
+  LV_FONT_DECLARE(ui_font_xlcdmin);
+#if defined(__XTOUCH_SCREEN_50__)
+  /* 5インチのみ: 日本語ファイル名用 Noto 28 */
+  LV_FONT_DECLARE(lv_font_notosans_28);
+#endif
+
+  LV_FONT_DECLARE(rus);
+
+  // 関数の宣言
+  const lv_font_t *lv_font_small(void);
+  const lv_font_t *lv_font_middle(void);
+  const lv_font_t *lv_font_big(void);
+  const lv_font_t *lv_icon_font_small(void);
+
+  // 切り替え用のsetter関数
+  void lv_font_small_set(const lv_font_t *font);
+  void lv_font_middle_set(const lv_font_t *font);
+  void lv_font_big_set(const lv_font_t *font);
+  void lv_icon_font_small_set(const lv_font_t *font);
+
+  // マクロで変数アクセスを関数呼び出しに置き換え（既存コードとの互換性のため）
+  #define lv_font_small (lv_font_small())
+  #define lv_font_middle (lv_font_middle())
+  #define lv_font_big (lv_font_big())
+  #define lv_icon_font_small (lv_icon_font_small())
+  extern lv_img_dsc_t img_logo;
+  extern lv_img_dsc_t img_logo2;
+  void ui_init(void);
+
+  bool xtouch_bblp_is_p1p();
+  bool xtouch_bblp_is_p1Series();
+  bool xtouch_bblp_is_x1();
+  bool xtouch_bblp_is_x1s();
+
+#ifdef __cplusplus
+} /*extern "C"*/
+#endif
+
+#endif

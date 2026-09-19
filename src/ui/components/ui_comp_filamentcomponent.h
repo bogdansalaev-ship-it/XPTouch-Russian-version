@@ -1,0 +1,35 @@
+#ifndef _UI_COMP_FILAMENTCOMPONENT_H
+#define _UI_COMP_FILAMENTCOMPONENT_H
+
+#include "../ui.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// COMPONENT filamentComponent
+enum FilamentComponent {
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTCOMPONENT,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENNOZZLE,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENNOZZLE_FILAMENTSCREENNOZZLEUP,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENNOZZLE_FILAMENTSCREENNOZZLEICON,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENNOZZLE_FILAMENTSCREENNOZZLETEMP,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENNOZZLE_FILAMENTSCREENNOZZLEDOWN,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENFILAMENT,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENFILAMENT_FILAMENTSCREENUNLOAD,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENFILAMENT_FILAMENTSCREENFILAMENTICON,
+    UI_COMP_FILAMENTCOMPONENT_FILAMENTSCREENFILAMENT_FILAMENTSCREENLOAD,
+    _UI_COMP_FILAMENTCOMPONENT_NUM
+};
+
+lv_obj_t *ui_filamentComponent_create(lv_obj_t *comp_parent);
+void ui_event_comp_filamentComponent_filamentScreenNozzleUpClick( lv_event_t * e);
+void ui_event_comp_filamentComponent_filamentScreenNozzleDownCick( lv_event_t * e);
+void ui_event_comp_filamentComponent_filamentScreenUnloadClick( lv_event_t * e);
+void ui_event_comp_filamentComponent_filamentScreenLoadClick( lv_event_t * e);
+
+#ifdef __cplusplus
+} /*extern "C"*/
+#endif
+
+#endif

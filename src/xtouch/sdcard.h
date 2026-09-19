@@ -1,0 +1,62 @@
+#ifndef _XLCD_SDCARD
+#define _XLCD_SDCARD
+
+#include "FS.h"
+#include "SD.h"
+#include <SPI.h>
+#include <ArduinoJson.h>
+#include <Arduino.h>
+
+bool xtouch_sdcard_setup(int8_t sd_cs_pin)
+{
+    /* LCD設定はそのまま、SD(SPI)だけ低速化して安定性を優先 */
+    const uint32_t sd_freq_hz = 20000000; /* 20MHz */
+    bool ok = (sd_cs_pin < 0) ? SD.begin() : SD.begin(sd_cs_pin, SPI, sd_freq_hz);
+    if (!ok)
+    {
+        lv_label_set_text(introScreenCaption, LV_SYMBOL_SD_CARD " INSERT SD CARD");
+        lv_obj_set_style_text_color(introScreenCaption, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_timer_handler();
+
+        ConsoleError.println("[xPTouch][E][SD] Card Mount Failed");
+        return false;
+    }
+
+    lv_obj_set_style_text_color(introScreenCaption, lv_color_hex(0x555555), LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    uint8_t cardType = SD.cardType();
+
+    if (cardType == CARD_NONE)
+    {
+        ConsoleError.println("[xPTouch][E][SD] No SD card attached");
+        return false;
+    }
+
+    ConsoleInfo.printf("[xPTouch][I][SD] Card Type: %d\n", cardType);
+
+    if (cardType == CARD_MMC)
+    {
+        ConsoleInfo.println("MMC");
+    }
+    else if (cardType == CARD_SD)
+    {
+        ConsoleInfo.println("SDSC");
+    }
+    else if (cardType == CARD_SDHC)
+    {
+        ConsoleInfo.println("SDHC");
+    }
+    else
+    {
+        ConsoleInfo.println("UNKNOWN");
+    }
+
+    uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+    ConsoleInfo.printf("[xPTouch][I][SD] Card Size: %lluMB\n", cardSize);
+    xtouch_filesystem_mkdir(SD, xtouch_paths_root);
+    xtouch_filesystem_mkdir(SD, "/tmp");
+
+    return true;
+}
+
+#endif
