@@ -29,8 +29,8 @@
 #include "xtouch/net.h"
 #include "xtouch/firmware.h"
 #include "xtouch/mqtt.h"
-#if defined(__XTOUCH_SCREEN_50__)
 #include "xtouch/thumbnail.h"
+#if defined(__XTOUCH_SCREEN_50__)
 #include "xtouch/history.h"
 #include "xtouch/lv_fs_arduino_sd.h"
 #include "xtouch/lcd_json.h"
@@ -155,9 +155,9 @@ void setup()
 #if defined(__XTOUCH_SCREEN_50__)
   xtouch_lcd_json_apply_from_sd_and_reboot();
   lv_fs_arduino_sd_init();  /* LVGL FS ドライバ: Arduino SD を 'S:' として登録 */
-  xtouch_thumbnail_subscribe_events();
   xtouch_history_subscribe_events();
 #endif
+  xtouch_thumbnail_subscribe_events();
 
   xtouch_coldboot_check();
 

@@ -278,7 +278,7 @@ void _ui_seconds_to_timeleft(uint32_t seconds, char *ret)
    }
 }
 
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
 void ui_thumb_set_img_src_from_slot(lv_obj_t *img, int slot)
 {
    if (!img || slot < 0 || slot >= XTOUCH_THUMB_SLOT_MAX)

@@ -5,15 +5,19 @@
 #include <string.h>
 #include "ui/ui_msgs.h"
 #include "xtouch/types.h"
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
 #include "xtouch/net.h"
 #include <SD.h>
+#endif
+#ifdef __XTOUCH_SCREEN_50__
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
 #endif
 
-#define XTOUCH_THUMB_SLOT_MAX 5
+#ifndef XTOUCH_THUMB_SLOT_MAX
+#define XTOUCH_THUMB_SLOT_MAX 1
+#endif
 #define XTOUCH_THUMB_LGFX_W 150
 #define XTOUCH_THUMB_LGFX_H 150
 /** DL 開始を遅らせる ms。この間は画面遷移など UI が応答する */
@@ -111,13 +115,18 @@ static bool thumbnail_slot_has_url_or_task(int slot, int cloud_logged_in)
             return true;
         return false;
     }
-    int idx = slot - 1;
+ #ifdef __XTOUCH_SCREEN_50__
+     int idx = slot - 1;
     if (idx >= xtouch_other_printer_count || !otherPrinters[idx].valid)
         return false;
     if (otherPrinters[idx].image_url[0])
         return true;
     if (cloud_logged_in && otherPrinters[idx].task_id[0] && strcmp(otherPrinters[idx].task_id, "0") != 0)
         return true;
+ #else
+    (void)slot;
+    (void)cloud_logged_in;
+ #endif
     return false;
 }
 
@@ -208,11 +217,29 @@ static void thumbnail_do_slot_cb(lv_timer_t *t)
     if (xQueueSend(s_thumb_download_queue, &item, 0) != pdTRUE)
         return;
 }
+#elif defined(__XTOUCH_SCREEN_28__)
+static void thumbnail_do_slot_cb(lv_timer_t *t)
+{
+    int slot = (int)(intptr_t)t->user_data;
+    char url[1024];
+    char path[64];
+    if (slot != 0 || xTouchConfig.xTouchHideAllThumbnails ||
+        !getThumbnailUrlAndPathForSlot(slot, url, sizeof(url), path, sizeof(path)))
+        return;
+    if (downloadFileToSDCard(url, path) == 0)
+    {
+        xtouch_thumbnail_update_path_for_slot(slot);
+        if (xtouch_load_thumb_slot_with_lgfx(slot, 64, 64))
+        {
+            lv_msg_send(XTOUCH_ON_OTHER_PRINTER_UPDATE, (void *)(intptr_t)1);
+        }
+    }
+}
 #else
 static void thumbnail_do_slot_cb(lv_timer_t *t) { (void)t; }
 #endif
 
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
 /** 1 回だけ実行: サムネ更新メッセージを送る。タイマーコールバックの外で送って描画を確実に反映させる。 */
 static void thumbnail_send_update_one_shot_cb(lv_timer_t *t)
 {
@@ -577,7 +604,7 @@ static lv_color_t *g_history_cover_buf[XTOUCH_HISTORY_COVER_SLOTS] = { nullptr }
 static lv_img_dsc_t g_history_cover_dsc[XTOUCH_HISTORY_COVER_SLOTS];
 
 extern "C" {
-void *xtouch_thumbnail_slot_dsc[XTOUCH_THUMB_SLOT_MAX] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+void *xtouch_thumbnail_slot_dsc[XTOUCH_THUMB_SLOT_MAX] = { nullptr };
 void *xtouch_history_cover_dsc[XTOUCH_HISTORY_COVER_SLOTS] = {};
 void *xtouch_history_reprint_cover_dsc = nullptr;
 }

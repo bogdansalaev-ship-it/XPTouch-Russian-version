@@ -12,6 +12,15 @@ extern "C"
 {
 #endif
 
+#if defined(__XTOUCH_SCREEN_50__)
+#define XTOUCH_THUMB_SLOT_MAX 5
+#else
+#define XTOUCH_THUMB_SLOT_MAX 1
+#endif
+#define XTOUCH_THUMB_PATH_LEN 64
+    extern char xtouch_thumbnail_slot_path[XTOUCH_THUMB_SLOT_MAX][XTOUCH_THUMB_PATH_LEN];
+    extern void *xtouch_thumbnail_slot_dsc[XTOUCH_THUMB_SLOT_MAX];
+
     enum XTouchPrinterSeries {
         SERIES_X1 = 0,
         SERIES_P1P,
@@ -294,13 +303,6 @@ extern "C"
     extern char xtouch_current_printer_dev_product_name[XTOUCH_DEV_PRODUCT_NAME_LEN];
     extern char xtouch_other_printer_dev_product_names[XTOUCH_OTHER_PRINTERS_MAX][XTOUCH_DEV_PRODUCT_NAME_LEN];
     extern int xtouch_other_printer_count;
-
-    /** サムネイル表示用: スロット番号ごとの SD パス（"S:/tmp/{task_id}.png"）。UI はこれを参照するだけ。xtouch が init で埋める。 */
-#define XTOUCH_THUMB_SLOT_MAX 5
-#define XTOUCH_THUMB_PATH_LEN 64
-    extern char xtouch_thumbnail_slot_path[XTOUCH_THUMB_SLOT_MAX][XTOUCH_THUMB_PATH_LEN];
-    /** LGFX デコード済みサムネイルの descriptor ポインタ（スロット毎）。UI は lv_img_set_src(img, (lv_img_dsc_t*)xtouch_thumbnail_slot_dsc[slot]) で表示。 */
-    extern void *xtouch_thumbnail_slot_dsc[XTOUCH_THUMB_SLOT_MAX];
 
     /** Cloud 印刷履歴（user-service/my/tasks）1件。UI は参照のみ。再印刷用に model_id/profile_id/plate_index を保持。 */
 #define XTOUCH_HISTORY_TASKS_MAX 20

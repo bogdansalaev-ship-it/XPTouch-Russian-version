@@ -14,6 +14,7 @@ int xtouch_filament_current_brand_index = -1;
 int xtouch_filament_current_type_count = 0;
 int xtouch_filament_pipe_holds_brands = 0;
 int xtouch_filament_use_fixed_brands = 1;
+char xtouch_thumbnail_slot_path[XTOUCH_THUMB_SLOT_MAX][XTOUCH_THUMB_PATH_LEN];
 
 #ifdef __XTOUCH_SCREEN_50__
 other_printer_status_t otherPrinters[XTOUCH_OTHER_PRINTERS_MAX];
@@ -21,7 +22,6 @@ char xtouch_other_printer_dev_ids[XTOUCH_OTHER_PRINTERS_MAX][16];
 char xtouch_current_printer_dev_product_name[XTOUCH_DEV_PRODUCT_NAME_LEN];
 char xtouch_other_printer_dev_product_names[XTOUCH_OTHER_PRINTERS_MAX][XTOUCH_DEV_PRODUCT_NAME_LEN];
 int xtouch_other_printer_count = 0;
-char xtouch_thumbnail_slot_path[XTOUCH_THUMB_SLOT_MAX][XTOUCH_THUMB_PATH_LEN];
 xtouch_history_task_t xtouch_history_tasks[XTOUCH_HISTORY_TASKS_MAX];
 int xtouch_history_count = 0;
 char xtouch_history_reprint_task_id[XTOUCH_HISTORY_TASK_ID_LEN] = { 0 };

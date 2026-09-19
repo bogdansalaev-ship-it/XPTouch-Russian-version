@@ -22,9 +22,7 @@ String xtouch_mqtt_report_topic;
 #include "ams.h"
 #include "device.h"
 #include "trays.h"
-#ifdef __XTOUCH_SCREEN_50__
 #include "xtouch/thumbnail.h"
-#endif
 #define XTOUCH_MQTT_SERVER_TIMEOUT 20
 #define XTOUCH_MQTT_SERVER_PUSH_STATUS_TIMEOUT 1800
 #define XTOUCH_MQTT_SERVER_JSON_PARSE_SIZE 4192
@@ -773,7 +771,7 @@ void xtouch_mqtt_processPushStatus(JsonDocument &incomingJson)
             {
                 String new_tid_str = incomingJson["print"]["subtask_id"].as<String>();
                 const char *new_tid = new_tid_str.c_str();
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
                 if (new_tid[0] && strcmp(bambuStatus.task_id, new_tid) != 0)
                 {
                     bambuStatus.image_url[0] = '\0';
@@ -785,7 +783,7 @@ void xtouch_mqtt_processPushStatus(JsonDocument &incomingJson)
                 bambuStatus.task_id[sizeof(bambuStatus.task_id) - 1] = '\0';
             }
         }
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
         /* サムネイル取得用。LAN モードでは cloud 未ログインのため task_id だけでは取得不可。url があれば使用。task_id/subtask_id 処理の後に実行。 */
         if (incomingJson["print"].containsKey("url"))
         {

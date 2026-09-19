@@ -1218,14 +1218,16 @@ lv_obj_t *ui_homeComponent_create(lv_obj_t *comp_parent)
         lv_obj_set_style_text_font(cui_mainScreenNozzleIcon, lv_icon_font_small, LV_PART_MAIN | LV_STATE_DEFAULT);
     }
 #else
-    /* 2.8: サムネイル非表示 */
-    cui_mainScreenNozzleIcon = lv_label_create(cui_mainScreenController);
-    lv_obj_set_width(cui_mainScreenNozzleIcon, LV_SIZE_CONTENT);  /// 50
-    lv_obj_set_height(cui_mainScreenNozzleIcon, LV_SIZE_CONTENT); /// 24
-    lv_label_set_text(cui_mainScreenNozzleIcon, "p");
-    lv_obj_clear_flag(cui_mainScreenNozzleIcon, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE | LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN); /// Flags
-    lv_obj_set_scrollbar_mode(cui_mainScreenNozzleIcon, LV_SCROLLBAR_MODE_OFF);
-    lv_obj_set_style_text_font(cui_mainScreenNozzleIcon, lv_icon_font_small, LV_PART_MAIN | LV_STATE_DEFAULT);
+    /* 2.8: фиксированная область миниатюры вместо иконки сопла. */
+    cui_mainScreenNozzleIcon = lv_img_create(cui_mainScreenController);
+    lv_obj_set_width(cui_mainScreenNozzleIcon, 64);
+    lv_obj_set_height(cui_mainScreenNozzleIcon, 64);
+    lv_img_set_size_mode(cui_mainScreenNozzleIcon, LV_IMG_SIZE_MODE_REAL);
+    lv_obj_set_style_bg_color(cui_mainScreenNozzleIcon, lv_color_hex(0x333333), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(cui_mainScreenNozzleIcon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(cui_mainScreenNozzleIcon, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_thumb_set_img_src_from_slot(cui_mainScreenNozzleIcon, 0);
+    ui_homeThumbImg = cui_mainScreenNozzleIcon;
 #endif
 
 #if defined(__XTOUCH_SCREEN_50__)

@@ -141,9 +141,9 @@ extern "C"
   /* ui_historyListContainer は ui_comp_historycomponent.c で定義 */
   extern lv_obj_t *ui_historyListContainer;
   lv_obj_t *ui_historyReprintScreen;
-  /** Home 画面のサムネイル img（slot 0）。グローバル購読で IMAGE 受信時に再描画するため。 */
-  extern lv_obj_t *ui_homeThumbImg;
 #endif
+  /** Home 画面のサムネイル img（slot 0）。 */
+  extern lv_obj_t *ui_homeThumbImg;
 
   void ui_event____initial_actions0(lv_event_t *e);
   lv_obj_t *ui____initial_actions0;

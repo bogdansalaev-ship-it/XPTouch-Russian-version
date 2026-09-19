@@ -126,7 +126,7 @@ int downloadFileToSDCard(const char *url, const char *fileName, void (*onProgres
     return success;
 }
 
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
 
 #include "esp_attr.h"
 #include "xtouch/types.h"
@@ -144,8 +144,10 @@ inline void getThumbPathForSlot(int slot, char *buf, size_t len)
     const char *tid = nullptr;
     if (slot == 0)
         tid = (bambuStatus.task_id[0] && strcmp(bambuStatus.task_id, "0") != 0) ? bambuStatus.task_id : nullptr;
+#ifdef __XTOUCH_SCREEN_50__
     else if (slot >= 1 && slot - 1 < xtouch_other_printer_count && otherPrinters[slot - 1].valid)
         tid = (otherPrinters[slot - 1].task_id[0] && strcmp(otherPrinters[slot - 1].task_id, "0") != 0) ? otherPrinters[slot - 1].task_id : nullptr;
+#endif
     if (!tid || !tid[0])
         return;
     char safe[32];
@@ -203,6 +205,7 @@ inline bool getThumbnailUrlAndPathForSlot(int slot, char *url_out, size_t url_si
     }
     else
     {
+#ifdef __XTOUCH_SCREEN_50__
         int idx = slot - 1;
         if (idx < 0 || idx >= xtouch_other_printer_count || !otherPrinters[idx].valid)
             return false;
@@ -228,6 +231,9 @@ inline bool getThumbnailUrlAndPathForSlot(int slot, char *url_out, size_t url_si
         }
         if (!url || !url[0])
             return false;
+    #else
+        return false;
+    #endif
     }
     getThumbPathForSlot(slot, path_out, path_size);
     if (!path_out[0])
@@ -276,11 +282,13 @@ inline bool downloadThumbnailForSlot(int slot)
         else
         {
             int idx = slot - 1;
+#ifdef __XTOUCH_SCREEN_50__
             if (idx >= 0 && idx < xtouch_other_printer_count)
             {
                 otherPrinters[idx].image_url[0] = '\0';
                 otherPrinters[idx].task_id[0] = '\0';
             }
+#endif
         }
         return false;
     }

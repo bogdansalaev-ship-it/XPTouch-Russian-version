@@ -7,7 +7,7 @@ static int s_pending_screen = -10000;
 static bool s_async_pending = false;
 
 
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
 static bool s_home_thumb_global_subscribed = false;
 /** IMAGE 受信（サムネ DL 完了）時に Home 表示中なら slot 0 を必ず再描画する。オブジェクト購読が届かない場合の保険。 */
 static void on_home_thumb_global(lv_msg_t *m, void *user_data)
@@ -100,7 +100,7 @@ static void loadScreen_deferred_cb(void *data)
     }
 
     lv_obj_t *current = lv_scr_act();
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
     if (current == ui_homeScreen)
         ui_homeThumbImg = NULL;
 #endif
@@ -121,7 +121,7 @@ static void loadScreen_deferred_cb(void *data)
     case 0:
         ui_homeScreen_screen_init();
         lv_disp_load_scr(ui_homeScreen);
-#ifdef __XTOUCH_SCREEN_50__
+#if defined(__XTOUCH_SCREEN_50__) || defined(__XTOUCH_SCREEN_28__)
         if (!s_home_thumb_global_subscribed)
         {
             lv_msg_subscribe(XTOUCH_ON_OTHER_PRINTER_UPDATE, (lv_msg_subscribe_cb_t)on_home_thumb_global, NULL);
@@ -129,9 +129,11 @@ static void loadScreen_deferred_cb(void *data)
         }
         ui_msg_send(XTOUCH_PRINTERS_THUMB_TIMER_START, 0, 0);
         ui_msg_send(XTOUCH_PRINTERS_SCHEDULE_THUMB_FETCH, 0, 0);
+    #ifdef __XTOUCH_SCREEN_50__
         extern void xtouch_mqtt_pushall_all_printers_for_screen_c(void);
         xtouch_mqtt_pushall_all_printers_for_screen_c();
 #endif
+    #endif
         break;
     case 1:
        ui_temperatureScreen_screen_init();
