@@ -235,22 +235,60 @@ xtouchとかP1touch用に作られてているものがPrintableやMakerWorldに
 
 ## ファームウェアのインストール
 
-### ステップ1: Google Chromeでオンラインインストーラーを開く
+> **重要:** このプロジェクトでは、デバイスへのファームウェア書き込みは**ブラウザのオンラインインストーラーではなく、Visual Studio Code + PlatformIO**で行うことを推奨します。  
+> ブラウザ方式は古いフローで、現在のプロジェクト構成では正しく管理されません。実際のビルドとアップロードは VS Code 上で行ってください。
 
-1. コンピューターで**Google Chrome**を開いてください。
+### 必要な環境
 
-   > **注意:** このプロセスでは他のブラウザーはサポートされていません。
-   >
-2. 以下のURLを入力してインストーラーページに移動してください：
+1. **Visual Studio Code** をインストールする
+   - [Visual Studio Code](https://code.visualstudio.com/)
+2. **PlatformIO IDE 拡張機能** を VS Code に追加する
+   - VS Code の拡張機能タブで `PlatformIO IDE` を検索してインストール
+3. **Python** と **Node.js** をインストールする
+   - このプロジェクトのビルド時に必要です
+4. USB ケーブルで ESP32 を PC に接続する
+5. 端末のシリアルポートドライバがあることを確認する
+   - 必要に応じて CH340 / CP210x ドライバをインストール
 
-   **[ESP32-2432R028](https://tac-lab.tech/xptouch-bin/2.8/)**
-   **[JC8048W550](https://tac-lab.tech/xptouch-bin/5.0/)**
+### 手順: VS Code でプロジェクトを開いて書き込み
 
-### ステップ2: オンラインインストーラーの使用
+1. このリポジトリをローカルにクローンまたは展開して、VS Code で開く
+2. VS Code の左下の PlatformIO アイコンを開く
+3. **Open Project** またはこのフォルダを PlatformIO プロジェクトとして開く
+4. 必要に応じて、`docs/boards/esp32-s3-devkitc1-n16r8.json` を PlatformIO のボード定義へコピーする
+   - macOS/Linux:
+     ```bash
+     cp docs/boards/esp32-s3-devkitc1-n16r8.json ~/.platformio/boards/esp32-s3-devkitc1-n16r8.json
+     ```
+   - Windows PowerShell:
+     ```powershell
+     Copy-Item "docs\boards\esp32-s3-devkitc1-n16r8.json" "$env:USERPROFILE\.platformio\boards\esp32-s3-devkitc1-n16r8.json"
+     ```
+5. `platformio.ini` を確認して対象の環境を選ぶ
+   - 2.8インチ: `env:esp32dev`
+   - 5インチ: `env:esp32-s3dev`
+6. VS Code の PlatformIO タブで **Build** を実行する
+7. **Upload** を実行して ESP32 に書き込む
+8. 書き込み完了後、デバイスを再起動して動作確認する
 
-1. ウェブページで**「接続」**ボタンをクリックして、コンピューターとxptouchスクリーン間の接続を確立してください。
-2. 表示された利用可能なポートのリストから、xptouchスクリーンに割り当てられたシリアルポートを選択してください。
-3. 接続後、**「xptouchをインストール」**ボタンをクリックしてインストールプロセスを開始してください。
+### VS Code でのアップロード例
+
+```bash
+pio run -e esp32dev -t upload
+```
+
+または
+
+```bash
+pio run -e esp32-s3dev -t upload
+```
+
+### 重要な注意点
+
+- **ブラウザからのオンラインインストーラーは使用しない**
+- 実際の書き込みは **Visual Studio Code の PlatformIO** で行う
+- 接続するシリアルポートが正しいことを確認する
+- 書き込み前にデバイスの電源が安定していることを確認する
 
 ---
 
